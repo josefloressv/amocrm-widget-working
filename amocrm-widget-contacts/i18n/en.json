@@ -6,6 +6,6 @@
         "tour_description":"Tour description"
     },
     "settings":{
-        "webhook_url":"Webhook URL"
+        "api_externa":"URL Externa (Endpoint)"
     }
 }

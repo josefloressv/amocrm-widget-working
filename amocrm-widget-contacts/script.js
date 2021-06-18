@@ -57,7 +57,7 @@ define(['jquery'], function ($) {
       console.log("Sending....")
       console.log(JSON.stringify(self.contacts))
       self.crm_post(
-        self.get_settings().webhook_url,
+        self.get_settings().api_externa,
         {
           // Sending POST data
           data : JSON.stringify(self.contacts)

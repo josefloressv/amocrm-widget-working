@@ -3,7 +3,7 @@
     "name": "widget.name",
     "description": "widget.description",
     "short_description": "widget.short_description",
-    "version": "1.0.60",
+    "version": "1.0.62",
     "interface_version": 2,
     "init_once": true,
     "locale": [
@@ -31,8 +31,8 @@
     "tour_description": "widget.tour_description"
   },
   "settings": {
-    "webhook_url": {
-      "name": "settings.webhook_url",
+    "api_externa": {
+      "name": "settings.api_externa",
       "type": "text",
       "required": true
     }
