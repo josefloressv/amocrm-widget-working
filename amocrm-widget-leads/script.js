@@ -128,19 +128,28 @@ define(['jquery'], function ($) {
                </div>\
                    <div id="js-ac-sub-subs-container">\
                    </div>\
-                   <div class="ac-form-button ac_sub">ENVIAR</div>\
+                   <div class="ac-form-button ac_sub goweb-btn-update-lead">ACTUALIZAR</div>\
+                   <div class="ac-form-button ac_sub goweb-btn-send-lead">ENVIAR</div>\
                    </div>\
                <div class="ac-already-subs"></div>\
             <link type="text/css" rel="stylesheet" href="/upl/' + self.get_settings().widget_code + '/widget/style.css" >'
           });
                     
           //redefining click on render
-          $('.ac-form-button').off('click')
-          $('.ac-form-button').on('click', function () {
+          $('.goweb-btn-send-lead').off('click')
+          $('.goweb-btn-send-lead').on('click', function () {
             console.log('click SEND')
             console.log(self.cLead)
             self.sendInfo();
           });
+
+          $('.goweb-btn-update-lead').off('click')
+          $('.goweb-btn-update-lead').on('click', function () {
+            console.log('click UPDATE')
+            self.cLead = self.get_lead_info();
+            self.WriteInWidget()
+          });
+
           self.WriteInWidget()
         }
         
