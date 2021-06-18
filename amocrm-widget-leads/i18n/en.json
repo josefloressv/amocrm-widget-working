@@ -1,0 +1,11 @@
+{
+    "widget":{
+        "name":"GoWeb Leads",
+        "short_description":"Short description",
+        "description":"Full description",
+        "tour_description":"Tour description"
+    },
+    "settings":{
+        "api_externa":"URL Externa (Endpoint)"
+    }
+}

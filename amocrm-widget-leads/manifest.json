@@ -1,0 +1,39 @@
+{
+  "widget": {
+    "name": "widget.name",
+    "description": "widget.description",
+    "short_description": "widget.short_description",
+    "version": "1.0.10",
+    "interface_version": 2,
+    "init_once": true,
+    "locale": [
+      "en"
+    ],
+    "installation": true,
+    "support": {
+      "link": "https://goweb.tech",
+      "email": "jose@goweb.tech"
+    }
+  },
+  "locations": [
+    "lcard-1"
+  ],
+  "tour": {
+    "is_tour": true,
+    "tour_images": {
+      "ru": [
+        "/images/logo_main.png",
+        "/images/logo_main.png",
+        "/images/logo_main.png"
+      ]
+    },
+    "tour_description": "widget.tour_description"
+  },
+  "settings": {
+    "api_externa": {
+      "name": "settings.api_externa",
+      "type": "text",
+      "required": true
+    }
+  }
+}
