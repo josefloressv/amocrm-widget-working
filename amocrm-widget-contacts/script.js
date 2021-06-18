@@ -2,20 +2,18 @@ define(['jquery'], function ($) {
   var CustomWidget = function () {
     var self = this,
       system = self.system;
+      self.contacts = []
     
-    console.log(system)
-
     this.get_ccard_info = function () // Collecting information from a contact card
     {
-      console.log("area == " + self.system().area)
-
+      console.log("get_cccard_info area == " + self.system().area)
+      
       if (self.system().area == 'ccard') {
-        var phones = $('.card-cf-table-main-entity .phone_wrapper input[type=text]:visible'),
-          emails = $('.card-cf-table-main-entity .email_wrapper input[type=text]:visible'),
-          name = $('.card-top-name input').val(),
+        var phones = $('#edit_card .control-phone input[type=text]:visible'),
+          emails = $('#edit_card input[data-type=email]:visible'),
+          full_name = $('.control-fullname input:eq(0)').val() + " " + $('.control-fullname input:eq(1)').val(),
           data = [],
           c_phones = [], c_emails = [];
-        data.name = name;
         for (var i = 0; i < phones.length; i++) {
           if ($(phones[i]).val().length > 0) {
             c_phones[i] = $(phones[i]).val();
@@ -27,18 +25,37 @@ define(['jquery'], function ($) {
             c_emails[i] = $(emails[i]).val();
           }
         }
-        data['emails'] = c_emails;
-        get_ccard_info
+
+        data = [{
+          name : full_name,
+          phones: c_phones,
+          emails: c_emails
+        }]
         console.log(data)
         return data;
-      }
-      else {
+      } else if (self.system().area == 'clist'){
+        //contact lists
+        var c_data = self.list_selected().selected;
+        console.log(c_data)
+        
+          var data = [];
+        c_data.forEach(function(element, index){
+          data[index] = {
+            name : 'name here',
+            phones: element.phones,
+            emails: element.emails
+          }
+        })
+        console.log(data);
+        return data;
+      }else {
         return false;
       }
     };
 
     this.sendInfo = function () { // Sending collected information
       console.log("Sending....")
+      console.log(JSON.stringify(self.contacts))
       self.crm_post(
         'http://awslab.tech/amocrm.php',
         {
@@ -58,6 +75,30 @@ define(['jquery'], function ($) {
       console.log("Luego del post....")
     };
 
+    this.WriteInWidget = function () {
+      console.log("WriteInWidget in " + self.system().area)
+      $('#js-ac-sub-lists-container').children().remove(); // The container is cleaned then the elements are collected in the container, selected in list.container - div block of widget, displayed in the right column.
+      if ( self.system().area == 'ccard' || self.system().area == 'clist') {
+        var row = ''
+
+        self.contacts.forEach(function(element){
+          row += '<p>Name: ' + element.name + '<br/>Emails: ';
+          var i = 0;
+          for(i=0; i< element.emails.length; i++) {
+            row += element.emails[i] + ', ';  
+          }
+          row += '<br/>Phones: ';
+          for(i=0; i< element.phones.length; i++) {
+            row += element.phones[i] + ', ';
+          }
+          row += '</p>';
+          $('#js-ac-sub-lists-container').append(row)
+          row = ''        
+        })        
+      }
+      console.log(self.contacts)      
+    };
+
     this.callbacks = {
       settings: function () {
       },
@@ -65,24 +106,16 @@ define(['jquery'], function ($) {
       },
       init: function () {
         console.log("init function")
-        if (self.system().area == 'ccard') {
-          self.contacts = self.get_ccard_info();
-          console.log("GoWeb Custommer contacts")
-          console.log(self.contacts)
-        }
+        console.log('init area = ' + self.system().area)
         return true;
       },
       bind_actions: function () {
-        console.log("Binding actions")
-        if (self.system().area == 'ccard' || 'clist') {
-          $('.ac-form-button').on('click', function () {
-            console.log("Click in SEND")
-            self.sendInfo();
-          });
-        }
+        console.log("binding actions function")
+        console.log('binding area = ' + self.system().area)
         return true;
       },
       render: function () {
+        console.log('render function')
         var lang = self.i18n('userLang');
         w_code = self.get_settings().widget_code; // in this case w_code='new-widget'
         if (typeof(AMOCRM.data.current_card) != 'undefined') {
@@ -91,10 +124,11 @@ define(['jquery'], function ($) {
             return false;
           } // do not render contacts/add || leads/add
         }
+        console.log('rendering...')
         self.render_template({
           caption: {
             class_name: 'js-ac-caption',
-            html: ''
+            html: 'This is the caption'
           },
           body: '',
           render: '\
@@ -108,28 +142,30 @@ define(['jquery'], function ($) {
              <div class="ac-already-subs"></div>\
           <link type="text/css" rel="stylesheet" href="/upl/' + w_code + '/widget/style.css" >'
         });
+        
+        if ( self.system().area == 'ccard') {
+          self.contacts = self.get_ccard_info();
+        }
+
+        if (self.system().area == 'ccard' || 'clist') {
+          //redefining click on render
+          $('.ac-form-button').off('click')
+          $('.ac-form-button').on('click', function () {
+            console.log('click SEND')
+            console.log(self.contacts)
+            console.log("binding Click in SEND")
+            self.sendInfo();
+          });
+        }
+        
+        self.WriteInWidget()
         return true;
       },
       contacts: {
         selected: function () {    // Here is the behavior for multi-select contacts and click on the name of the widget
-          console.log("Contact selected")
-          var c_data = self.list_selected().selected;
-          console.log(c_data)
-          $('#js-sub-lists-container').children().remove(); // The container is cleaned then the elements are collected in the container, selected in list.container - div block of widget, displayed in the right column.
-            var names = [], // Array of names
-            length = c_data.length; // Number of selected id (counting starts from 0)
-          for (var i = 0; i < length; i++) {
-            names[i] = {
-              emails: c_data[i].emails,
-              phones: c_data[i].phones
-            };
-          }
-          console.log(names);
-          for (var i = 0; i < length; i++) {
-            $('#js-ac-sub-lists-container').append('<p>Email:' + names[i].emails + ' Phone:' + names[i].phones + '</p>');
-          }
-          $(self.contacts).remove(); // clear the variable
-          self.contacts = names;
+          console.log("selected contacts function")
+          self.contacts = self.get_ccard_info();
+          self.WriteInWidget()
         }
       },
       leads: {
@@ -144,5 +180,8 @@ define(['jquery'], function ($) {
     };
     return this;
   };
+  
+  console.log(CustomWidget)
+
   return CustomWidget;
 });
