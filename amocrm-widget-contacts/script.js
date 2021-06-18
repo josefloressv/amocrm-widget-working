@@ -57,7 +57,7 @@ define(['jquery'], function ($) {
       console.log("Sending....")
       console.log(JSON.stringify(self.contacts))
       self.crm_post(
-        'http://awslab.tech/amocrm.php',
+        self.get_settings().webhook_url,
         {
           // Sending POST data
           data : JSON.stringify(self.contacts)
@@ -124,30 +124,30 @@ define(['jquery'], function ($) {
             return false;
           } // do not render contacts/add || leads/add
         }
-        console.log('rendering...')
-        self.render_template({
-          caption: {
-            class_name: 'js-ac-caption',
-            html: 'This is the caption'
-          },
-          body: '',
-          render: '\
-                 <div class="ac-form">\
-             <div id="js-ac-sub-lists-container">\
-             </div>\
-                 <div id="js-ac-sub-subs-container">\
-                 </div>\
-                 <div class="ac-form-button ac_sub">SEND</div>\
-                 </div>\
-             <div class="ac-already-subs"></div>\
-          <link type="text/css" rel="stylesheet" href="/upl/' + w_code + '/widget/style.css" >'
-        });
-        
         if ( self.system().area == 'ccard') {
           self.contacts = self.get_ccard_info();
         }
 
         if (self.system().area == 'ccard' || 'clist') {
+          console.log('rendering...')
+          self.render_template({
+            caption: {
+              class_name: 'js-ac-caption',
+              html: 'This is the caption'
+            },
+            body: '',
+            render: '\
+                   <div class="ac-form">\
+               <div id="js-ac-sub-lists-container">\
+               </div>\
+                   <div id="js-ac-sub-subs-container">\
+                   </div>\
+                   <div class="ac-form-button ac_sub">SEND</div>\
+                   </div>\
+               <div class="ac-already-subs"></div>\
+            <link type="text/css" rel="stylesheet" href="/upl/' + w_code + '/widget/style.css" >'
+          });
+                    
           //redefining click on render
           $('.ac-form-button').off('click')
           $('.ac-form-button').on('click', function () {
@@ -156,9 +156,9 @@ define(['jquery'], function ($) {
             console.log("binding Click in SEND")
             self.sendInfo();
           });
+          self.WriteInWidget()
         }
         
-        self.WriteInWidget()
         return true;
       },
       contacts: {
